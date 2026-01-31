@@ -1,0 +1,35 @@
+<html>
+<head>
+  <title>Welkom</title>
+  <style>
+    body {
+      background: black;
+      color: lime;
+      font-family: monospace;
+      font-size: 32px;
+      text-align: center;
+      margin-top: 20%;
+    }
+  </style>
+</head>
+<body>
+  <p id="text">Je bent hier.</p>
+
+  <script>
+    const teksten = [
+      "Je bent hier.",
+      "Dit is een website.",
+      "Er is niets te doen.",
+      "Je kunt alles doen.",
+      "Maar je doet niets.",
+      "Welkom."
+    ];
+
+    let i = 0;
+    setInterval(() => {
+      document.getElementById("text").innerText = teksten[i];
+      i = (i + 1) % teksten.length;
+    }, 2000);
+  </script>
+</body>
+</html>
