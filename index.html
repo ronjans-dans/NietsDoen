@@ -1,6 +1,9 @@
-<html>
+<!DOCTYPE html>
+<html lang="nl">
 <head>
-  <title>Welkom</title>
+  <meta charset="UTF-8">
+  <title>Niets</title>
+
   <style>
     body {
       background: black;
@@ -9,27 +12,204 @@
       font-size: 32px;
       text-align: center;
       margin-top: 20%;
+      cursor: none;
+      transition: background 0.2s;
+    }
+
+    #text {
+      opacity: 0;
+      animation: fade 2s infinite alternate;
+      z-index: 10;
+      position: relative;
+    }
+
+    #plaatjes-container {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      margin-top: 20px;
+      z-index: 1;
+    }
+
+    @keyframes fade {
+      from { opacity: 0.2; }
+      to { opacity: 1; }
+    }
+
+    .flash {
+      background: white !important;
+      color: black !important;
+    }
+
+    #plaatjes-container img {
+      position: absolute;
+      bottom: 0px;
+      transition: opacity 1s;
     }
   </style>
 </head>
+
 <body>
-  <p id="text">Je bent hier.</p>
+  <div id="text">Je bent hier.</div>
+  <div id="plaatjes-container"></div>
 
   <script>
+    // 🌀 Typewriter teksten
     const teksten = [
       "Je bent hier.",
-      "Dit is een website.",
-      "Er is niets te doen.",
-      "Je kunt alles doen.",
-      "Maar je doet niets.",
-      "Welkom."
+      "Je had ook ergens anders kunnen zijn.",
+      "Maar je bent hier.",
+      "Waarom?",
+      "Blijf.",
+      "Nog niet.",
+      "Bijna.",
+      "Dit is het niet.",
+      "Dit is het bijna."
     ];
 
+    const textEl = document.getElementById("text");
     let i = 0;
+
+    function typeText(element, text, speed = 60) {
+      element.textContent = "";
+      let idx = 0;
+      function type() {
+        if (idx < text.length) {
+          const char = text[idx];
+          element.textContent += (char === " " ? "\u00A0" : char);
+          idx++;
+          setTimeout(type, speed);
+        }
+      }
+      type();
+    }
+
     setInterval(() => {
-      document.getElementById("text").innerText = teksten[i];
+      typeText(textEl, teksten[i]);
       i = (i + 1) % teksten.length;
+    }, 2500);
+
+    // 😵 Tabblad chaos
+    const titels = ["Niets","Nog steeds niets","Je bent er nog","Waarom?","Blijf."];
+    setInterval(() => {
+      document.title = titels[Math.floor(Math.random() * titels.length)];
     }, 2000);
+
+    // 🎙️ Stem
+    const zinnen = [
+      "Welkom.",
+      "Je kunt hier alles doen.",
+      "Je doet niets.",
+      "Dat is genoeg.",
+      "Blijf nog even.",
+      "Ga niet weg."
+    ];
+
+    const synth = window.speechSynthesis;
+
+    function praat() {
+      if (!synth.speaking) {
+        const u = new SpeechSynthesisUtterance(
+          zinnen[Math.floor(Math.random() * zinnen.length)]
+        );
+        u.rate = 0.9;
+        u.pitch = 1;
+        synth.speak(u);
+      }
+    }
+
+    // 🎵 Geluidseffecten
+    const sounds = [
+      "effect1.mp3",
+      "effect2.mp3",
+      "effect3.mp3",
+      "effect4.mp3"
+    ];
+
+    let audioGestart = false;
+    const audioObjects = [];
+
+    function initAudio() {
+      sounds.forEach(src => {
+        const audio = new Audio(src);
+        audio.preload = "auto";
+        audio.volume = 0.3;
+        audioObjects.push(audio);
+      });
+    }
+
+    function speelGeluid() {
+      const audio = audioObjects[Math.floor(Math.random() * audioObjects.length)];
+      audio.currentTime = 0;
+      audio.play().catch(err => console.log("Audio play error:", err));
+    }
+
+    // 🚀 Start alles na eerste klik
+    document.body.addEventListener("click", () => {
+      if (audioGestart) return;
+      audioGestart = true;
+
+      initAudio();  // preload audio direct
+      praat();      // stem
+      speelGeluid();// eerste geluid meteen
+
+      setInterval(() => {
+        if (Math.random() > 0.5) praat();
+        if (Math.random() > 0.7) speelGeluid();
+      }, 4000);
+    });
+
+    // 🔥 Sporadische flits
+    setInterval(() => {
+      if (Math.random() > 0.97) {
+        document.body.classList.add("flash");
+        setTimeout(() => document.body.classList.remove("flash"), 100);
+      }
+    }, 3000);
+
+    // ⏳ Tijd bijhouden
+    let seconden = 0;
+    setInterval(() => {
+      seconden++;
+      if (seconden === 30) textEl.textContent = "Je bent hier al 30 seconden.";
+      if (seconden === 60) textEl.textContent = "Je had kunnen stoppen.";
+    }, 1000);
+
+    // 😈 Weggaan = schuldgevoel
+    window.onbeforeunload = function () {
+      return "Ben je zeker?";
+    };
+
+    // 🖼️ Random kleine plaatjes onder de tekst
+    const plaatjes = [
+      "https://i.etsystatic.com/25815771/r/il/8ef12f/3778544635/il_1140xN.3778544635_84z9.jpg",
+      "https://i.etsystatic.com/56142300/r/il/38fa68/6719387357/il_1140xN.6719387357_k32n.jpg",
+      "https://i.etsystatic.com/20862972/r/il/0ff266/2506911534/il_1140xN.2506911534_gfom.jpg",
+      "https://i.etsystatic.com/9001843/r/il/be5328/6134355290/il_1140xN.6134355290_nq41.jpg",
+      "https://i.etsystatic.com/9001843/r/il/518376/4695748643/il_1140xN.4695748643_erb7.jpg",
+      "https://i.etsystatic.com/20862972/r/il/9eb644/2006738156/il_1140xN.2006738156_sv1j.jpg"
+    ];
+
+    const container = document.getElementById("plaatjes-container");
+
+    function spawnPlaatje() {
+      const img = document.createElement("img");
+      img.src = plaatjes[Math.floor(Math.random() * plaatjes.length)];
+      img.style.left = Math.random() * 70 + "%";
+      img.style.width = (10 + Math.random() * 20) + "%"; // 10-30%
+      img.style.opacity = "0";
+
+      container.appendChild(img);
+
+      setTimeout(() => { img.style.opacity = "1"; }, 50);
+
+      setTimeout(() => {
+        img.style.opacity = "0";
+        setTimeout(() => container.removeChild(img), 1000);
+      }, 3000 + Math.random() * 2000);
+    }
+
+    setInterval(spawnPlaatje, 2000 + Math.random() * 2000);
   </script>
 </body>
 </html>
