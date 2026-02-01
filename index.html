@@ -43,18 +43,21 @@
 
     #plaatjes-container img {
       position: absolute;
-      bottom: 0px;
+      bottom: 0;
       transition: opacity 1s;
     }
   </style>
 </head>
 
 <body>
-  <div id="text">Je bent hier.</div>
+
+  <div id="text">Tik om te blijven.</div>
   <div id="plaatjes-container"></div>
 
   <script>
-    // 🌀 Typewriter teksten
+    /* =========================
+       TYPEWRITER TEKSTEN
+    ========================== */
     const teksten = [
       "Je bent hier.",
       "Je had ook ergens anders kunnen zijn.",
@@ -68,34 +71,43 @@
     ];
 
     const textEl = document.getElementById("text");
-    let i = 0;
+    let tekstIndex = 0;
+    let typenActief = false;
 
     function typeText(element, text, speed = 60) {
       element.textContent = "";
-      let idx = 0;
+      let i = 0;
+      typenActief = true;
+
       function type() {
-        if (idx < text.length) {
-          const char = text[idx];
-          element.textContent += (char === " " ? "\u00A0" : char);
-          idx++;
+        if (i < text.length) {
+          element.textContent += text[i] === " " ? "\u00A0" : text[i];
+          i++;
           setTimeout(type, speed);
+        } else {
+          typenActief = false;
         }
       }
       type();
     }
 
     setInterval(() => {
-      typeText(textEl, teksten[i]);
-      i = (i + 1) % teksten.length;
-    }, 2500);
+      if (!audioGestart) return;
+      typeText(textEl, teksten[tekstIndex]);
+      tekstIndex = (tekstIndex + 1) % teksten.length;
+    }, 2800);
 
-    // 😵 Tabblad chaos
-    const titels = ["Niets","Nog steeds niets","Je bent er nog","Waarom?","Blijf."];
+    /* =========================
+       TABBLAD CHAOS
+    ========================== */
+    const titels = ["Niets", "Nog steeds niets", "Je bent er nog", "Waarom?", "Blijf."];
     setInterval(() => {
       document.title = titels[Math.floor(Math.random() * titels.length)];
     }, 2000);
 
-    // 🎙️ Stem
+    /* =========================
+       STEM
+    ========================== */
     const zinnen = [
       "Welkom.",
       "Je kunt hier alles doen.",
@@ -108,17 +120,21 @@
     const synth = window.speechSynthesis;
 
     function praat() {
-      if (!synth.speaking) {
-        const u = new SpeechSynthesisUtterance(
-          zinnen[Math.floor(Math.random() * zinnen.length)]
-        );
-        u.rate = 0.9;
-        u.pitch = 1;
-        synth.speak(u);
-      }
+      if (synth.speaking) return;
+
+      const u = new SpeechSynthesisUtterance(
+        zinnen[Math.floor(Math.random() * zinnen.length)]
+      );
+      u.lang = "nl-NL";
+      u.rate = 0.85 + Math.random() * 0.2;
+      u.pitch = 0.9 + Math.random() * 0.2;
+
+      synth.speak(u);
     }
 
-    // 🎵 Geluidseffecten
+    /* =========================
+       GELUID
+    ========================== */
     const sounds = [
       "effect1.mp3",
       "effect2.mp3",
@@ -126,32 +142,45 @@
       "effect4.mp3"
     ];
 
-    let audioGestart = false;
     const audioObjects = [];
 
     function initAudio() {
       sounds.forEach(src => {
-        const audio = new Audio(src);
-        audio.preload = "auto";
-        audio.volume = 0.3;
-        audioObjects.push(audio);
+        const a = new Audio(src);
+        a.preload = "auto";
+        a.volume = 0.6;
+        audioObjects.push(a);
       });
     }
 
     function speelGeluid() {
-      const audio = audioObjects[Math.floor(Math.random() * audioObjects.length)];
-      audio.currentTime = 0;
-      audio.play().catch(err => console.log("Audio play error:", err));
+      if (!audioObjects.length) return;
+      const a = audioObjects[Math.floor(Math.random() * audioObjects.length)];
+      a.currentTime = 0;
+      a.play().catch(() => {});
     }
 
-    // 🚀 Start alles na eerste klik
+    /* =========================
+       MOBIELE AUDIO UNLOCK
+    ========================== */
+    function unlockAudio() {
+      const silent = new Audio();
+      silent.play().catch(() => {});
+    }
+
+    let audioGestart = false;
+
     document.body.addEventListener("click", () => {
       if (audioGestart) return;
-      audioGestart = true;
 
-      initAudio();  // preload audio direct
-      praat();      // stem
-      speelGeluid();// eerste geluid meteen
+      audioGestart = true;
+      unlockAudio();
+      initAudio();
+
+      setTimeout(() => {
+        praat();
+        speelGeluid();
+      }, 300);
 
       setInterval(() => {
         if (Math.random() > 0.5) praat();
@@ -159,7 +188,9 @@
       }, 4000);
     });
 
-    // 🔥 Sporadische flits
+    /* =========================
+       FLASH
+    ========================== */
     setInterval(() => {
       if (Math.random() > 0.97) {
         document.body.classList.add("flash");
@@ -167,20 +198,25 @@
       }
     }, 3000);
 
-    // ⏳ Tijd bijhouden
+    /* =========================
+       TIJD
+    ========================== */
     let seconden = 0;
     setInterval(() => {
+      if (!audioGestart) return;
       seconden++;
       if (seconden === 30) textEl.textContent = "Je bent hier al 30 seconden.";
       if (seconden === 60) textEl.textContent = "Je had kunnen stoppen.";
     }, 1000);
 
-    // 😈 Weggaan = schuldgevoel
-    window.onbeforeunload = function () {
-      return "Ben je zeker?";
-    };
+    /* =========================
+       WEGGAAN
+    ========================== */
+    window.onbeforeunload = () => "Ben je zeker?";
 
-    // 🖼️ Random kleine plaatjes onder de tekst
+    /* =========================
+       PLAATJES
+    ========================== */
     const plaatjes = [
       "https://i.etsystatic.com/25815771/r/il/8ef12f/3778544635/il_1140xN.3778544635_84z9.jpg",
       "https://i.etsystatic.com/56142300/r/il/38fa68/6719387357/il_1140xN.6719387357_k32n.jpg",
@@ -193,23 +229,28 @@
     const container = document.getElementById("plaatjes-container");
 
     function spawnPlaatje() {
+      if (!audioGestart) return;
+
       const img = document.createElement("img");
       img.src = plaatjes[Math.floor(Math.random() * plaatjes.length)];
       img.style.left = Math.random() * 70 + "%";
-      img.style.width = (10 + Math.random() * 20) + "%"; // 10-30%
+      img.style.width = (10 + Math.random() * 20) + "%";
       img.style.opacity = "0";
 
       container.appendChild(img);
 
-      setTimeout(() => { img.style.opacity = "1"; }, 50);
+      setTimeout(() => img.style.opacity = "1", 50);
 
       setTimeout(() => {
         img.style.opacity = "0";
-        setTimeout(() => container.removeChild(img), 1000);
+        setTimeout(() => {
+          if (container.contains(img)) container.removeChild(img);
+        }, 1000);
       }, 3000 + Math.random() * 2000);
     }
 
-    setInterval(spawnPlaatje, 2000 + Math.random() * 2000);
+    setInterval(spawnPlaatje, 2500);
   </script>
+
 </body>
 </html>
